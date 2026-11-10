@@ -38,21 +38,21 @@ if (stills) {
   await browser.close();
   console.log('stills →', dir);
 } else {
-  const total = Math.round(45 * FPS);
+  const total = Math.round(35 * FPS);
   let next = 0, done = 0;
   await Promise.all(Array.from({ length: WORKERS }, async () => {
     const page = await open();
     while (next < total) {
       const f = next++;
       await page.evaluate(t => window.seek(t), f / FPS);
-      await page.screenshot({ path: `${dir}/f${String(f).padStart(5, '0')}.png`, type: 'png' });
+      await page.screenshot({ path: `${dir}/f${String(f).padStart(5, '0')}.jpg`, type: 'jpeg', quality: 97 });
       if (++done % 150 === 0) console.log(`${done}/${total}`);
     }
   }));
   await browser.close();
-  const r = spawnSync('ffmpeg', ['-y', '-v', 'error', '-framerate', String(FPS), '-i', `${dir}/f%05d.png`,
+  const r = spawnSync('ffmpeg', ['-y', '-v', 'error', '-framerate', String(FPS), '-i', `${dir}/f%05d.jpg`,
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
-    'out/easyfly-pub-45s.mp4'], { stdio: 'inherit' });
+    'out/easyfly-pub-35s.mp4'], { stdio: 'inherit' });
   if (r.status !== 0) process.exit(1);
-  console.log('vidéo → out/easyfly-pub-45s.mp4');
+  console.log('vidéo → out/easyfly-pub-35s.mp4');
 }

@@ -1,8 +1,8 @@
-/* EASY FLY — publicité motion design 45 s (1080×1920, 30 i/s)
+/* EASY FLY — publicité motion design 35 s (1080×1920, 30 i/s)
    Toute l'animation vit dans une timeline GSAP unique, pilotable image par image
    via window.seek(t) (utilisé par scripts/render.mjs). */
 (() => {
-const W = 1080, H = 1920, DUR = 45;
+const W = 1080, H = 1920, DUR = 35;
 const RENDER = new URLSearchParams(location.search).has('render');
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -55,7 +55,7 @@ const proj = (lon, lat) => [(lon - LON0) * K, (LAT0 - lat) * K];
 const R = 1.7;
 $('#dots').setAttribute('d', dots.map(([x, y]) => `M${x - R},${y}a${R},${R} 0 1,0 ${2 * R},0a${R},${R} 0 1,0 ${-2 * R},0`).join(''));
 
-const MAPC = { x: 540, y: 700 };                 // centre écran de la carte
+const MAPC = { x: 540, y: 650 };                 // centre écran de la carte
 const cam = { x: 0, y: 0, s: 1 };
 const [hx, hy] = proj(HOME.lon, HOME.lat);
 const invEls = [];                                // éléments à taille écran constante
@@ -64,9 +64,9 @@ const mkPin = (x, y, label, lab, home) => {
   const g = svg('g', { transform: `translate(${x},${y})` }, $('#pins'));
   const inv = svg('g', {}, g); invEls.push(inv);
   const pop = svg('g', { class: 'pop' }, inv);
-  const ring = svg('circle', { r: home ? 14 : 10, fill: 'none', stroke: '#F0D592', 'stroke-width': 2, class: 'ring' }, pop);
-  svg('circle', { r: home ? 9 : 6.5, fill: home ? '#F0D592' : '#F3E9D2' }, pop);
-  if (home) svg('circle', { r: 3.5, fill: '#0A1B2B' }, pop);
+  const ring = svg('circle', { r: home ? 14 : 10, fill: 'none', stroke: '#B07F28', 'stroke-width': 2, class: 'ring' }, pop);
+  svg('circle', { r: home ? 11 : 8, fill: '#FFFFFF' }, pop);
+  svg('circle', { r: home ? 7 : 5, fill: home ? '#B07F28' : '#0B2135' }, pop);
   const tx = svg('text', { x: lab[0], y: lab[1], 'text-anchor': lab[2], class: 'pin-label' + (home ? ' home' : '') }, pop);
   tx.textContent = label;
   return { g, pop, ring, tx };
@@ -81,7 +81,7 @@ DESTS.forEach((d, i) => {
   const cx = hx + dx / 2 + nx * dist * 0.24, cy = hy + dy / 2 + ny * dist * 0.24;
   const path = svg('path', { d: `M${hx},${hy} Q${cx},${cy} ${x},${y}`, class: 'route-solid' }, $('#routes'));
   const plane = svg('g', {}, $('#routes'));
-  const pinv = svg('use', { href: '#plane', width: 34, height: 34, x: -17, y: -17, fill: '#F3E9D2' }, plane);
+  const pinv = svg('use', { href: '#plane', width: 34, height: 34, x: -17, y: -17, fill: '#0B2135' }, plane);
   const L = path.getTotalLength();
   path.style.strokeDasharray = L;
   const st = { p: 0, o: 1 };
@@ -93,9 +93,9 @@ DESTS.forEach((d, i) => {
 
   // bloc texte
   const el = document.createElement('div'); el.className = 'dest';
-  el.innerHTML = `<div class="num"><span class="m"><span class="i"><b>${String(i + 1).padStart(2, '0')}</b> / ${String(DESTS.length).padStart(2, '0')}</span></span><span class="code">${d.code}</span></div>
+  el.innerHTML = `<div class="num"><span class="m"><span class="i">DESTINATION&nbsp; <b>${String(i + 1).padStart(2, '0')}</b> / ${String(DESTS.length).padStart(2, '0')}</span></span><span class="code">${d.code}</span></div>
     <div class="name"><span class="m"><span class="i">${d.name}</span></span></div>
-    <div class="sub"><span class="m"><span class="i">${d.city}</span></span></div>`;
+    <div class="to"><b><span class="m"><span class="i">${d.code}</span></span></b><span><span class="m"><span class="i">${d.city}</span></span></span></div>`;
   $('#dests').appendChild(el); d.el = el;
   const tick = document.createElement('i'); tick.innerHTML = '<b></b>'; $('#ticks').appendChild(tick); d.tick = tick.firstChild;
 });
@@ -149,7 +149,7 @@ function apply() {
 function build() {
   // ajustement des noms de destination à la largeur utile
   DESTS.forEach(d => { const n = $('.name', d.el), w = $('.i', n).getBoundingClientRect().width / stageScale;
-    if (w > 880) n.style.fontSize = Math.floor(176 * 880 / w) + 'px'; });
+    if (w > 830) n.style.fontSize = Math.floor(150 * 830 / w) + 'px'; });
 
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'expo.out' }, onUpdate: apply });
   const E_IN = 'expo.out', E_OUT = 'power3.in';
@@ -157,156 +157,161 @@ function build() {
   const up = (t, at, o = {}) => tl.from(t, { yPercent: 118, duration: 1, ease: E_IN, stagger: 0.09, ...o }, at);
   const out = (t, at, o = {}) => tl.to(t, { yPercent: -118, duration: 0.5, ease: E_OUT, stagger: 0.045, ...o }, at);
 
-  /* Fond : la lueur ambrée respire et se déplace selon les scènes */
-  gsap.set('#glow', { opacity: 0.25, y: 260 });
-  gsap.set('#glow2', { opacity: 0.5 });
-  tl.to('#glow', { opacity: 0.8, y: 0, duration: 4.5, ease: 'sine.out' }, 0)
-    .to('#glow', { x: 260, y: 120, opacity: 0.6, duration: 5, ease: 'sine.inOut' }, 4.8)
-    .to('#glow', { x: -80, y: 320, opacity: 0.32, duration: 2, ease: 'sine.inOut' }, 9.8)
-    .to('#glow', { x: 320, y: 60, opacity: 0.62, duration: 3, ease: 'sine.inOut' }, 26)
-    .to('#glow', { x: 0, y: -160, opacity: 0.95, duration: 3, ease: 'sine.inOut' }, 34.2)
-    .to('#glow', { x: 0, y: 80, opacity: 0.7, duration: 4, ease: 'sine.inOut' }, 39)
-    .to('#glow2', { x: -420, duration: DUR, ease: 'none' }, 0);
+  /* Fond : lueur chaude et nuages en dérive lente */
+  gsap.set('#glow', { opacity: 0.35, y: 260 });
+  tl.to('#glow', { opacity: 0.9, y: 0, duration: 3.4, ease: 'sine.out' }, 0)
+    .to('#glow', { x: 260, y: 120, opacity: 0.7, duration: 3.4, ease: 'sine.inOut' }, 3.5)
+    .to('#glow', { x: -80, y: 360, opacity: 0.45, duration: 2, ease: 'sine.inOut' }, 6.7)
+    .to('#glow', { x: 320, y: 60, opacity: 0.75, duration: 3, ease: 'sine.inOut' }, 19.8)
+    .to('#glow', { x: 0, y: -160, opacity: 1, duration: 3, ease: 'sine.inOut' }, 26.4)
+    .to('#glow', { x: 0, y: 200, opacity: 0.5, duration: 2, ease: 'sine.inOut' }, 29.6)
+    .to('#glow2', { x: -420, duration: DUR, ease: 'none' }, 0)
+    .fromTo('#cl1', { x: 0 }, { x: 420, duration: DUR, ease: 'none' }, 0)
+    .fromTo('#cl2', { x: 0 }, { x: -520, duration: DUR, ease: 'none' }, 0)
+    .fromTo('#cl3', { x: 0 }, { x: 360, duration: DUR, ease: 'none' }, 0);
 
   /* Cadre doré */
   const fr = $('#frame rect'), FL = fr.getTotalLength();
-  gsap.set(fr, { strokeDasharray: FL, strokeDashoffset: FL, opacity: 0.75 });
-  tl.to(fr, { strokeDashoffset: 0, duration: 2.6, ease: 'power3.inOut' }, 0.1);
+  gsap.set(fr, { strokeDasharray: FL, strokeDashoffset: FL, opacity: 0.7 });
+  tl.to(fr, { strokeDashoffset: 0, duration: 2.2, ease: 'power3.inOut' }, 0.1);
 
-  /* ── SCÈNE 1 · 0 → 4.9 s · Révélation du logo ── */
-  tl.from('#logo-wing .stripe', { x: -150, opacity: 0, duration: 1.3, stagger: 0.13 }, 0.35)
-    .from('#logo-wing', { rotation: -7, transformOrigin: '70% 60%', duration: 1.7 }, 0.35);
-  up(inn('.wm-easy'), 0.95, { stagger: 0.07, duration: 1.1 });
-  up(inn('.wm-fly'), 1.25, { stagger: 0.08, duration: 1.1 });
-  tl.from('#s1-rule', { scaleX: 0, duration: 1.1, ease: 'power3.inOut' }, 1.9);
-  up(inn('#s1-tag'), 2.15, { stagger: 0.07, duration: 0.95 });
-  tl.fromTo('#logo', { scale: 0.965 }, { scale: 1.03, duration: 4.9, ease: 'none', transformOrigin: '50% 45%' }, 0);
-  out(inn('#s1-tag'), 4.05, { stagger: 0.02 });
-  tl.to('#s1-rule', { scaleX: 0, duration: 0.4, ease: E_OUT }, 4.1);
-  out([...inn('.wm-easy'), ...inn('.wm-fly')], 4.15, { stagger: 0.03 });
-  tl.to('#logo-wing .stripe', { x: 190, opacity: 0, duration: 0.5, ease: E_OUT, stagger: 0.05 }, 4.2);
-  tl.set('#s1', { autoAlpha: 0 }, 4.95);
+  /* ── SCÈNE 1 · 0 → 3.6 s · Révélation du logo ── */
+  tl.from('#logo-wing .stripe', { x: -150, opacity: 0, duration: 1.2, stagger: 0.11 }, 0.25)
+    .from('#logo-wing', { rotation: -7, transformOrigin: '70% 60%', duration: 1.5 }, 0.25);
+  up(inn('.wm-easy'), 0.65, { stagger: 0.06, duration: 1 });
+  up(inn('.wm-fly'), 0.9, { stagger: 0.07, duration: 1 });
+  tl.from('#s1-rule', { scaleX: 0, duration: 0.9, ease: 'power3.inOut' }, 1.35);
+  up(inn('#s1-tag'), 1.5, { stagger: 0.06, duration: 0.9 });
+  tl.fromTo('#logo', { scale: 0.965 }, { scale: 1.03, duration: 3.6, ease: 'none', transformOrigin: '50% 45%' }, 0);
+  out(inn('#s1-tag'), 2.9, { stagger: 0.02, duration: 0.42 });
+  tl.to('#s1-rule', { scaleX: 0, duration: 0.35, ease: E_OUT }, 2.95);
+  out([...inn('.wm-easy'), ...inn('.wm-fly')], 3.0, { stagger: 0.025, duration: 0.42 });
+  tl.to('#logo-wing .stripe', { x: 190, opacity: 0, duration: 0.42, ease: E_OUT, stagger: 0.04 }, 3.05);
+  tl.set('#s1', { autoAlpha: 0 }, 3.6);
 
   /* Signature permanente */
-  show('#bug', 4.9, 39.1);
-  tl.from('#bug', { y: -40, opacity: 0, duration: 0.9 }, 4.9)
-    .to('#bug', { y: -40, opacity: 0, duration: 0.45, ease: E_OUT }, 38.6);
+  show('#bug', 3.55, 30.0);
+  tl.from('#bug', { y: -40, opacity: 0, duration: 0.9 }, 3.55)
+    .to('#bug', { y: -40, opacity: 0, duration: 0.4, ease: E_OUT }, 29.5);
 
-  /* ── SCÈNE 2 · 4.9 → 9.9 s · Typographie cinétique ── */
-  show('#s2', 4.9, 9.95);
+  /* ── SCÈNE 2 · 3.55 → 6.9 s · Typographie cinétique ── */
+  show('#s2', 3.55, 6.95);
   gsap.set('#globe', { x: 900, y: 1560, rotation: -18 });
-  tl.to('#globe', { opacity: 0.2, duration: 1.2, ease: 'sine.out' }, 5)
-    .fromTo('#globe', { scale: 0.86 }, { scale: 1.06, rotation: 10, duration: 5, ease: 'none', transformOrigin: '50% 50%' }, 4.9)
-    .to('#globe', { opacity: 0, duration: 0.5, ease: 'sine.in' }, 9.35);
-  tl.to(f2, { p: 1, duration: 2.4, ease: 'power2.inOut' }, 5.0)
-    .to('#s2-arc', { opacity: 0, duration: 0.6, ease: 'sine.in' }, 7.2);
-  show('#s2a', 4.95, 7.95);
-  up(inn('#s2a'), 5.0, { stagger: 0.2, duration: 1.05 });
-  tl.fromTo('#s2a', { x: 0 }, { x: -22, duration: 2.9, ease: 'none' }, 5.0);
-  out(inn('#s2a'), 7.35, { stagger: 0.06 });
-  show('#s2b', 7.85, 9.95);
-  up(inn('#s2b'), 7.9, { stagger: 0.12, duration: 0.95 });
-  tl.fromTo('#s2b', { x: 0 }, { x: -18, duration: 2, ease: 'none' }, 7.9);
-  out(inn('#s2b'), 9.35, { stagger: 0.04 });
+  tl.to('#globe', { opacity: 0.13, duration: 1, ease: 'sine.out' }, 3.6)
+    .fromTo('#globe', { scale: 0.86 }, { scale: 1.04, rotation: 6, duration: 3.4, ease: 'none', transformOrigin: '50% 50%' }, 3.55)
+    .to('#globe', { opacity: 0, duration: 0.45, ease: 'sine.in' }, 6.4);
+  tl.to(f2, { p: 1, duration: 2.3, ease: 'power2.inOut' }, 3.6)
+    .to('#s2-arc', { opacity: 0, duration: 0.5, ease: 'sine.in' }, 6.3);
+  show('#s2a', 3.6, 6.95);
+  up(inn('#s2a'), 3.65, { stagger: 0.17, duration: 1 });
+  tl.fromTo('#s2a', { x: 0 }, { x: -22, duration: 3.2, ease: 'none' }, 3.65);
+  out(inn('#s2a'), 6.3, { stagger: 0.05, duration: 0.45 });
 
-  /* ── SCÈNE 3 · 9.8 → 26.4 s · Destinations sur la carte ── */
-  const T3 = 9.8, STEP = 1.32, TD = 12.3;      // TD : première destination
-  show('#s3', T3, 26.45);
+  /* ── SCÈNE 3 · 6.7 → 20.2 s · Destinations : carte + billet ── */
+  const T3 = 6.7, STEP = 1.05, TD = 8.6;
+  const TM = TD + DESTS.length * STEP;          // 18.05 : plan large
+  show('#s3', T3, 20.2);
   Object.assign(cam, { x: hx + 20, y: hy - 60, s: 1.25 });
-  tl.fromTo('#map', { opacity: 0 }, { opacity: 1, duration: 1.2, ease: 'sine.out' }, T3)
-    .to(cam, { x: hx, y: hy - 10, s: 2.5, duration: 2.5, ease: 'power3.inOut' }, T3);
-  // point de départ
-  tl.from(homePin.pop, { scale: 0, duration: 0.8, ease: 'back.out(2.2)' }, T3 + 1.3);
-  [T3 + 1.5, T3 + 2.9, T3 + 5.5, T3 + 8.1, T3 + 10.7, T3 + 13.3, 24.4].forEach(t =>
-    tl.fromTo(homePin.ring, { scale: 1, opacity: 0.9 }, { scale: 4.2, opacity: 0, duration: 1.6, ease: 'power2.out', transformOrigin: '50% 50%' }, t));
-  show('#chip', T3 + 1.2, 24.2);
-  tl.from('#chip', { y: -30, opacity: 0, duration: 0.8 }, T3 + 1.2)
-    .to('#chip', { y: -30, opacity: 0, duration: 0.4, ease: E_OUT }, 23.8);
-  show('#ticks', TD - 0.1, 24.4);
-  tl.from('#ticks i', { scaleX: 0, opacity: 0, transformOrigin: '0 50%', duration: 0.6, stagger: 0.04 }, TD - 0.1)
-    .to('#ticks', { opacity: 0, duration: 0.3 }, 24.1);
+  tl.fromTo('#map', { opacity: 0 }, { opacity: 1, duration: 1, ease: 'sine.out' }, T3)
+    .to(cam, { x: hx, y: hy - 10, s: 2.5, duration: 2, ease: 'power3.inOut' }, T3);
+  tl.from(homePin.pop, { scale: 0, duration: 0.7, ease: 'back.out(2.2)' }, T3 + 0.9);
+  for (let t = T3 + 1.1; t < 19.2; t += 2.1)
+    tl.fromTo(homePin.ring, { scale: 1, opacity: 0.9 }, { scale: 4.2, opacity: 0, duration: 1.5, ease: 'power2.out', transformOrigin: '50% 50%' }, t);
+  show('#chip', T3 + 0.8, 18.3);
+  tl.from('#chip', { y: -30, opacity: 0, duration: 0.8 }, T3 + 0.8)
+    .to('#chip', { y: -30, opacity: 0, duration: 0.4, ease: E_OUT }, 17.85);
+  // billet
+  show('#ticket-wrap', T3 + 0.95, TM + 0.6);
+  tl.from('#ticket-wrap', { y: 260, opacity: 0, rotation: 3, duration: 1.1, ease: 'expo.out' }, T3 + 0.95)
+    .to('#ticket-wrap', { y: 200, opacity: 0, rotation: -2, duration: 0.5, ease: 'power3.in' }, TM + 0.05);
+  show('#ticks', TD - 0.3, TM + 0.4);
+  tl.from('#ticks i', { scaleX: 0, opacity: 0, transformOrigin: '50% 50%', duration: 0.5, stagger: 0.035 }, TD - 0.3)
+    .to('#ticks', { opacity: 0, duration: 0.3 }, TM + 0.05);
 
   DESTS.forEach((d, i) => {
     const t = TD + i * STEP, r = routes[i];
-    tl.to(cam, { ...d.cam, duration: 1.05, ease: 'power3.inOut' }, t - 0.25);
-    tl.to(r.st, { p: 1, duration: 0.85, ease: 'power2.inOut' }, t + 0.05);
-    tl.to(r.st, { o: 0.45, duration: 0.6, ease: 'sine.out' }, t + STEP);
-    tl.from(d.pin.pop, { scale: 0, duration: 0.6, ease: 'back.out(2.6)' }, t + 0.72);
-    tl.fromTo(d.pin.ring, { scale: 1, opacity: 0.9 }, { scale: 3.6, opacity: 0, duration: 1.0, ease: 'power2.out', transformOrigin: '50% 50%' }, t + 0.78);
+    tl.to(cam, { ...d.cam, duration: 0.95, ease: 'power3.inOut' }, t - 0.25);
+    tl.to(r.st, { p: 1, duration: 0.75, ease: 'power2.inOut' }, t + 0.05);
+    tl.to(r.st, { o: 0.4, duration: 0.5, ease: 'sine.out' }, t + STEP);
+    tl.from(d.pin.pop, { scale: 0, duration: 0.5, ease: 'back.out(2.6)' }, t + 0.62);
+    tl.fromTo(d.pin.ring, { scale: 1, opacity: 0.9 }, { scale: 3.6, opacity: 0, duration: 0.9, ease: 'power2.out', transformOrigin: '50% 50%' }, t + 0.66);
     tl.to(d.tick, { scaleX: 1, duration: STEP, ease: 'none' }, t);
-    // texte
+    tl.fromTo('#tk-plane', { x: 0 }, { x: 400, duration: 0.8, ease: 'power2.inOut' }, t + 0.05);
     const I = $$('.i', d.el), code = $('.code', d.el);
-    show(d.el, t, t + STEP + 0.4);
-    tl.from(I[0], { yPercent: 118, duration: 0.6 }, t + 0.02)
-      .from(code, { scale: 0.6, opacity: 0, duration: 0.5, ease: 'back.out(2)' }, t + 0.12)
-      .from(I[1], { yPercent: 112, duration: 0.75 }, t + 0.06)
-      .from(I[2], { yPercent: 118, duration: 0.7 }, t + 0.2);
-    const o = t + STEP - 0.22;
-    tl.to(I, { yPercent: -118, duration: 0.3, ease: 'power2.in', stagger: 0.025 }, o)
-      .to(code, { opacity: 0, duration: 0.2 }, o);
+    show(d.el, t, t + STEP + 0.3);
+    tl.from(I[0], { yPercent: 118, duration: 0.5 }, t)
+      .from(code, { scale: 0.6, opacity: 0, duration: 0.45, ease: 'back.out(2)' }, t + 0.1)
+      .from(I[1], { yPercent: 112, duration: 0.65 }, t + 0.04)
+      .from([I[2], I[3]], { yPercent: 118, duration: 0.55, stagger: 0.06 }, t + 0.16);
+    if (i < DESTS.length - 1) {
+      const o = t + STEP - 0.2;
+      tl.to(I, { yPercent: -118, duration: 0.26, ease: 'power2.in', stagger: 0.015 }, o)
+        .to(code, { opacity: 0, duration: 0.18 }, o);
+    }
   });
 
   // plan large : tout le réseau
-  const TM = TD + DESTS.length * STEP;          // ≈ 24.2
-  tl.to(cam, { x: proj(54, 0)[0], y: proj(0, -4)[1], s: 1.08, duration: 1.7, ease: 'power3.inOut' }, TM - 0.2);
-  routes.forEach((r, i) => tl.to(r.st, { o: 1, duration: 0.5, ease: 'sine.out' }, TM + 0.5 + i * 0.05));
-  show('#more', TM, 26.45);
-  up(inn('#more'), TM + 0.1, { stagger: 0.1, duration: 0.9 });
-  out(inn('#more'), 25.85, { stagger: 0.04 });
-  tl.to('#map', { opacity: 0, scale: 1.08, transformOrigin: '50% 36%', duration: 0.6, ease: 'power2.in' }, 25.85);
+  tl.to(cam, { x: proj(54, 0)[0], y: proj(0, -6)[1], s: 1.08, duration: 1.5, ease: 'power3.inOut' }, TM - 0.1);
+  routes.forEach((r, i) => tl.to(r.st, { o: 1, duration: 0.5, ease: 'sine.out' }, TM + 0.4 + i * 0.04));
+  show('#more', TM + 0.2, 20.2);
+  up(inn('#more'), TM + 0.3, { stagger: 0.09, duration: 0.85 });
+  out(inn('#more'), 19.6, { stagger: 0.035, duration: 0.42 });
+  tl.to('#map', { opacity: 0, scale: 1.08, transformOrigin: '50% 34%', duration: 0.55, ease: 'power2.in' }, 19.6);
 
-  /* ── SCÈNE 4 · 26.3 → 34.6 s · Services (cartes en perspective) ── */
-  show('#s4', 26.3, 34.65);
-  show('#s4-head', 26.3);
-  up(inn('#s4-head'), 26.4, { stagger: 0.1, duration: 0.95 });
+  /* ── SCÈNE 4 · 20.0 → 26.7 s · Services (cartes en perspective) ── */
+  show('#s4', 20.0, 26.7);
+  show('#s4-head', 20.0);
+  up(inn('#s4-head'), 20.1, { stagger: 0.09, duration: 0.9 });
   const cards = $$('.card');
-  tl.fromTo('#cards', { rotationY: -34, rotationX: 10, z: -160 }, { rotationY: -13, rotationX: 4, z: 0, duration: 2.2, ease: 'power3.out', transformOrigin: '50% 50%' }, 26.7)
-    .to('#cards', { rotationY: 9, rotationX: 2, duration: 5.4, ease: 'sine.inOut', transformOrigin: '50% 50%' }, 28.9)
-    .from(cards, { x: 900, opacity: 0, rotationY: -40, duration: 1.15, stagger: 0.11, ease: 'expo.out' }, 26.75);
+  tl.fromTo('#cards', { rotationY: -34, rotationX: 10, z: -160 }, { rotationY: -13, rotationX: 4, z: 0, duration: 1.9, ease: 'power3.out', transformOrigin: '50% 50%' }, 20.3)
+    .to('#cards', { rotationY: 9, rotationX: 2, duration: 4.2, ease: 'sine.inOut', transformOrigin: '50% 50%' }, 22.0)
+    .from(cards, { x: 900, opacity: 0, rotationY: -40, duration: 1.05, stagger: 0.09, ease: 'expo.out' }, 20.35);
   cards.forEach((c, i) => {
-    const t = 28.45 + i * 0.78, parts = [$('.t', c), $('.d', c), $('.n', c), $('.ico', c)];
-    tl.to($('.fill', c), { scaleX: 1, duration: 0.5, ease: 'power3.inOut' }, t)
-      .to(parts, { color: '#0A1B2B', borderColor: '#0A1B2B', duration: 0.3, ease: 'none' }, t + 0.1)
-      .to(c, { x: 34, scale: 1.035, duration: 0.5, ease: 'power3.out' }, t)
-      .to($('.fill', c), { scaleX: 0, transformOrigin: '100% 50%', duration: 0.5, ease: 'power3.inOut' }, t + 0.86)
-      .to([parts[0]], { color: '#F3E9D2', duration: 0.3, ease: 'none' }, t + 0.9)
-      .to([parts[1]], { color: 'rgba(243,233,210,0.7)', duration: 0.3, ease: 'none' }, t + 0.9)
-      .to([parts[2]], { color: '#D4A853', duration: 0.3, ease: 'none' }, t + 0.9)
-      .to([parts[3]], { color: '#F0D592', borderColor: 'rgba(212,168,83,0.7)', duration: 0.3, ease: 'none' }, t + 0.9)
-      .to(c, { x: 0, scale: 1, duration: 0.6, ease: 'power2.inOut' }, t + 0.86);
+    const t = 21.75 + i * 0.66, parts = [$('.t', c), $('.d', c), $('.n', c), $('.ico', c)];
+    tl.to($('.fill', c), { scaleX: 1, duration: 0.42, ease: 'power3.inOut' }, t)
+      .to(parts[0], { color: '#FFFFFF', duration: 0.25, ease: 'none' }, t + 0.08)
+      .to(parts[1], { color: 'rgba(246,238,220,0.8)', duration: 0.25, ease: 'none' }, t + 0.08)
+      .to([parts[2], parts[3]], { color: '#E2BD68', duration: 0.25, ease: 'none' }, t + 0.08)
+      .to(c, { x: 34, scale: 1.035, duration: 0.45, ease: 'power3.out' }, t)
+      .to($('.fill', c), { scaleX: 0, transformOrigin: '100% 50%', duration: 0.42, ease: 'power3.inOut' }, t + 0.72)
+      .to(parts[0], { color: '#0B2135', duration: 0.25, ease: 'none' }, t + 0.76)
+      .to(parts[1], { color: 'rgba(11,33,53,0.64)', duration: 0.25, ease: 'none' }, t + 0.76)
+      .to([parts[2], parts[3]], { color: '#B07F28', duration: 0.25, ease: 'none' }, t + 0.76)
+      .to(c, { x: 0, scale: 1, duration: 0.5, ease: 'power2.inOut' }, t + 0.72);
   });
-  out(inn('#s4-head'), 33.95, { stagger: 0.04 });
-  tl.to(cards, { x: -1000, opacity: 0, rotationY: 30, duration: 0.6, stagger: 0.045, ease: 'power3.in' }, 33.9);
+  out(inn('#s4-head'), 26.1, { stagger: 0.035, duration: 0.42 });
+  tl.to(cards, { x: -1000, opacity: 0, rotationY: 30, duration: 0.5, stagger: 0.035, ease: 'power3.in' }, 26.0);
 
-  /* ── SCÈNE 5 · 34.5 → 39.1 s · Signature ── */
-  show('#s5', 34.5, 39.15);
-  show('#s5-txt', 34.5);
-  tl.to(f5a, { p: 1, duration: 2.3, ease: 'power2.inOut' }, 34.5)
-    .to(f5b, { p: 1, duration: 2.5, ease: 'power2.inOut' }, 34.85)
-    .to(['#s5-arc1', '#s5-arc2'], { opacity: 0, duration: 0.5, ease: 'sine.in' }, 38.5);
-  up($$('#s5-txt .xl2 .i'), 34.95, { stagger: 0.18, duration: 1.05 });
-  tl.from('#s5-rule', { scaleX: 0, duration: 0.9, ease: 'power3.inOut' }, 35.7);
-  up($$('#s5-txt .label .i'), 35.9, { duration: 0.8 });
-  tl.fromTo('#s5-txt', { scale: 0.97 }, { scale: 1.03, duration: 4.4, ease: 'none' }, 34.6);
-  out(inn('#s5-txt'), 38.45, { stagger: 0.05 });
-  tl.to('#s5-rule', { scaleX: 0, duration: 0.35, ease: E_OUT }, 38.45);
+  /* ── SCÈNE 5 · 26.6 → 30.0 s · Signature ── */
+  show('#s5', 26.6, 30.0);
+  show('#s5-txt', 26.6);
+  tl.to(f5a, { p: 1, duration: 2.1, ease: 'power2.inOut' }, 26.6)
+    .to(f5b, { p: 1, duration: 2.3, ease: 'power2.inOut' }, 26.85)
+    .to(['#s5-arc1', '#s5-arc2'], { opacity: 0, duration: 0.45, ease: 'sine.in' }, 29.4);
+  up($$('#s5-txt .xl2 .i'), 26.9, { stagger: 0.16, duration: 1 });
+  tl.from('#s5-rule', { scaleX: 0, duration: 0.8, ease: 'power3.inOut' }, 27.5);
+  up($$('#s5-txt .label .i'), 27.65, { duration: 0.8 });
+  tl.fromTo('#s5-txt', { scale: 0.97 }, { scale: 1.03, duration: 3.3, ease: 'none' }, 26.7);
+  out(inn('#s5-txt'), 29.35, { stagger: 0.04, duration: 0.42 });
+  tl.to('#s5-rule', { scaleX: 0, duration: 0.35, ease: E_OUT }, 29.35);
 
-  /* ── SCÈNE 6 · 39 → 45 s · Appel à l'action ── */
-  show('#s6', 39.0);
-  tl.from('#end-logo svg', { x: -120, opacity: 0, duration: 1.2 }, 39.1)
-    .from('#end-logo .wm', { y: 40, opacity: 0, duration: 1, stagger: 0.12 }, 39.3);
-  up(inn('.cta'), 39.7, { duration: 1 });
-  tl.from('#s6-rule', { scaleX: 0, duration: 0.9, ease: 'power3.inOut' }, 40.0);
-  up(inn('.phone'), 40.15, { duration: 1 });
-  up(inn('.mail'), 40.35, { duration: 1 });
-  up(inn('.svc'), 40.6, { duration: 0.9 });
-  show('#s6-pill', 40.8);
-  tl.from('#s6-pill', { y: 30, opacity: 0, duration: 0.8 }, 40.8);
-  up(inn('.filiale'), 41.0, { duration: 0.9 });
-  tl.fromTo('.phone', { scale: 1 }, { scale: 1.045, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 42.2)
-    .fromTo(['#end-logo', '.end-body', '.end-foot'], { scale: 1 }, { scale: 1.015, duration: 5.9, ease: 'none', transformOrigin: '50% 50%' }, 39.1);
+  /* ── SCÈNE 6 · 29.8 → 35 s · Appel à l'action ── */
+  show('#s6', 29.8);
+  tl.from('#panel', { y: 1400, duration: 1.2, ease: 'expo.out' }, 29.8)
+    .from('#end-logo svg', { x: -120, opacity: 0, duration: 1.1 }, 30.0)
+    .from('#end-logo .wm', { y: 40, opacity: 0, duration: 0.9, stagger: 0.1 }, 30.15);
+  up(inn('.cta'), 30.35, { duration: 0.95 });
+  tl.from('#s6-rule', { scaleX: 0, duration: 0.8, ease: 'power3.inOut' }, 30.6);
+  up(inn('.phone'), 30.7, { duration: 0.95 });
+  up(inn('.mail'), 30.85, { duration: 0.95 });
+  up(inn('.svc'), 31.05, { duration: 0.85 });
+  show('#s6-pill', 31.2);
+  tl.from('#s6-pill', { y: 30, opacity: 0, duration: 0.8 }, 31.2);
+  up(inn('.filiale'), 31.35, { duration: 0.85 });
+  tl.fromTo('.phone', { scale: 1 }, { scale: 1.045, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 32.5)
+    .fromTo(['.end-body', '.end-foot'], { scale: 1 }, { scale: 1.015, duration: 5, ease: 'none', transformOrigin: '50% 50%' }, 30.0);
 
-  tl.set({}, {}, DUR);                           // durée exacte : 45 s
+  tl.set({}, {}, DUR);                           // durée exacte : 35 s
   return tl;
 }
 

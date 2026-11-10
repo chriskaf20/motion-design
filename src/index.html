@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EASY FLY — Publicité motion design 45 s</title>
+<title>EASY FLY — Publicité motion design 35 s</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,13 +12,13 @@
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#F0D592"/>
-      <stop offset=".55" stop-color="#D4A853"/>
-      <stop offset="1" stop-color="#B48636"/>
+      <stop offset="0" stop-color="#E2BD68"/>
+      <stop offset=".55" stop-color="#C2913A"/>
+      <stop offset="1" stop-color="#96691F"/>
     </linearGradient>
     <linearGradient id="trail" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#D4A853" stop-opacity="0"/>
-      <stop offset="1" stop-color="#F0D592" stop-opacity="1"/>
+      <stop offset="0" stop-color="#C2913A" stop-opacity="0"/>
+      <stop offset="1" stop-color="#C2913A" stop-opacity="1"/>
     </linearGradient>
     <symbol id="wing" viewBox="0 0 258 168">
       <path d="M0,0 C40,30 80,40 125,40 L235,40 Q257,40 257,62 L257,70 L110,70 C60,70 20,40 0,0 Z"/>
@@ -36,12 +36,13 @@
   <div id="bg"></div>
   <div id="glow"></div>
   <div id="glow2"></div>
+  <div class="cloud" id="cl1"></div><div class="cloud" id="cl2"></div><div class="cloud" id="cl3"></div>
 
   <!-- ───────────── SCÈNE 3 : CARTE (placée sous les textes) ───────────── -->
   <div class="scene" id="s3">
     <svg id="map" viewBox="0 0 1080 1920" width="1080" height="1920">
       <g id="cam">
-        <path id="dots" fill="#F3E9D2"/>
+        <path id="dots" fill="#0B2135"/>
         <g id="routes"></g>
         <g id="pins"></g>
       </g>
@@ -50,7 +51,12 @@
 
     <div class="chip" id="chip"><span class="dot"></span>AU DÉPART DE LUBUMBASHI</div>
 
-    <div id="dests"></div>
+    <div id="ticket-wrap"><div id="ticket">
+      <div class="tk-line"></div>
+      <div class="tk-from"><b>FBM</b><span>Lubumbashi</span></div>
+      <div class="tk-track"><i></i><svg id="tk-plane" viewBox="0 0 48 48" width="40" height="40"><use href="#plane" fill="#C2913A"/></svg></div>
+      <div id="dests"></div>
+    </div></div>
     <div id="ticks"></div>
 
     <div class="block" id="more">
@@ -83,7 +89,7 @@
   <!-- ───────────── SCÈNE 2 : TYPOGRAPHIE CINÉTIQUE ───────────── -->
   <div class="scene" id="s2">
     <svg class="deco" viewBox="0 0 1080 1920" width="1080" height="1920">
-      <g id="globe" fill="none" stroke="#D4A853" stroke-width="1.5">
+      <g id="globe" fill="none" stroke="#0B2135" stroke-width="1.5">
         <circle cx="0" cy="0" r="430"/>
         <ellipse cx="0" cy="0" rx="150" ry="430"/>
         <ellipse cx="0" cy="0" rx="300" ry="430"/>
@@ -93,20 +99,13 @@
         <line x1="0" y1="-430" x2="0" y2="430"/>
       </g>
       <path id="s2-arc" class="arc" d="M-80,760 C260,420 700,300 1180,470" fill="none" stroke="url(#gold)" stroke-width="3" stroke-linecap="round"/>
-      <use id="s2-plane" class="flyer" href="#plane" width="64" height="64" x="-32" y="-32" fill="#F3E9D2"/>
+      <use id="s2-plane" class="flyer" href="#plane" width="64" height="64" x="-32" y="-32" fill="#0B2135"/>
     </svg>
 
     <div class="stack" id="s2a">
       <div class="xl rv">Le monde</div>
       <div class="xl rv">n’attend</div>
       <div class="xl rv"><em>que vous.</em></div>
-    </div>
-
-    <div class="stack" id="s2b">
-      <div class="label rv">AGENCE DE VOYAGE · LUBUMBASHI</div>
-      <div class="lg rv">Une seule</div>
-      <div class="lg rv">agence,</div>
-      <div class="lg rv"><em>mille horizons.</em></div>
     </div>
   </div>
 
@@ -125,8 +124,8 @@
     <svg class="deco" viewBox="0 0 1080 1920" width="1080" height="1920">
       <path id="s5-arc1" class="arc" d="M-120,1500 L1200,330" fill="none" stroke="url(#trail)" stroke-width="10" stroke-linecap="round" opacity=".55"/>
       <path id="s5-arc2" class="arc" d="M-120,1760 L1200,590" fill="none" stroke="url(#trail)" stroke-width="6" stroke-linecap="round" opacity=".35"/>
-      <use id="s5-plane1" class="flyer" href="#plane" width="72" height="72" x="-36" y="-36" fill="#F3E9D2"/>
-      <use id="s5-plane2" class="flyer" href="#plane" width="48" height="48" x="-24" y="-24" fill="#F3E9D2"/>
+      <use id="s5-plane1" class="flyer" href="#plane" width="72" height="72" x="-36" y="-36" fill="#0B2135"/>
+      <use id="s5-plane2" class="flyer" href="#plane" width="48" height="48" x="-24" y="-24" fill="#0B2135"/>
     </svg>
     <div class="stack center" id="s5-txt">
       <div class="xl2 rv">Nos connexions,</div>
@@ -138,8 +137,9 @@
 
   <!-- ───────────── SCÈNE 6 : APPEL À L'ACTION ───────────── -->
   <div class="scene" id="s6">
+    <div id="panel"></div>
     <div id="end-logo">
-      <svg viewBox="0 0 258 168" width="300" height="195" fill="url(#gold)"><use href="#wing"/></svg>
+      <svg viewBox="0 0 258 168" width="250" height="163" fill="url(#gold)"><use href="#wing"/></svg>
       <div class="wm wm-easy sm">EASY</div>
       <div class="wm wm-fly sm">FLY</div>
     </div>
@@ -164,7 +164,7 @@
 
   <!-- Cadre doré (identité des affiches) -->
   <svg id="frame" viewBox="0 0 1080 1920" width="1080" height="1920">
-    <rect x="36" y="36" width="1008" height="1848" rx="44" fill="none" stroke="#D4A853" stroke-width="2"/>
+    <rect x="36" y="36" width="1008" height="1848" rx="44" fill="none" stroke="#C2913A" stroke-width="2"/>
   </svg>
   <div id="grain"></div>
 </div>

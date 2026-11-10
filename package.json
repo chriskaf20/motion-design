@@ -1,0 +1,19 @@
+{
+  "name": "easyfly-motion-ad",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Publicité motion design 45 s pour l'agence de voyage EASY FLY (HTML + GSAP, rendu MP4)",
+  "type": "module",
+  "scripts": {
+    "build:map": "node scripts/build-map.mjs",
+    "render": "node scripts/render.mjs"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/josefin-sans": "^5.3.0",
+    "d3-geo": "^3.1.2",
+    "gsap": "^3.15.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  }
+}
